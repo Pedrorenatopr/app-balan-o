@@ -403,7 +403,9 @@
             const nome = input.value.trim();
             if (!nome) { mostrarToast('Digite o produto!'); return; }
 
-            dadosLojas[lojaAtual].compras.push({ id: Date.now().toString(), nome: nome, quantidade: '', preco: '' });
+            // MODIFICAÇÃO AQUI: Usando unshift() para que o novo item fique em primeiro na lista
+            dadosLojas[lojaAtual].compras.unshift({ id: Date.now().toString(), nome: nome, quantidade: '', preco: '' });
+            
             input.value = ''; input.focus();
             document.getElementById('sugestoes-container').classList.add('hidden');
             salvarDados(); renderizar();
@@ -441,7 +443,8 @@
             if (!desc) { mostrarToast('Descreva a despesa!'); return; }
             if (isNaN(valor) || valor <= 0) { mostrarToast('Insira um valor válido!'); return; }
 
-            dadosLojas[lojaAtual].despesas.push({ id: 'd_'+Date.now().toString(), nome: desc, valor: valor });
+            // MODIFICAÇÃO AQUI: Usando unshift() para que a nova despesa fique em primeiro na lista
+            dadosLojas[lojaAtual].despesas.unshift({ id: 'd_'+Date.now().toString(), nome: desc, valor: valor });
             
             inputDesc.value = ''; inputValor.value = ''; inputDesc.focus();
             salvarDados(); renderizar(); mostrarToast('Despesa adicionada!');
