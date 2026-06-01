@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sacolão Folha Verde - Balanço Diário</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f3f4f6;
+            -webkit-user-select: none;
+            user-select: none;
+            overscroll-behavior-y: contain;
+        }
+        
+        input {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 50;
+            left: 50%;
+            bottom: 90px;
+            transform: translateX(-50%);
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 110px;
+        }
+
+        /* Scrollbar oculta para chips horizontais */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen max-w-md mx-auto bg-gray-50 shadow-xl relative">
+
+    <!-- Cabeçalho -->
+    <header class="bg-emerald-600 text-white p-4 shadow-md z-10 rounded-b-xl">
+        <h1 class="text-2xl font-bold text-center mb-3">Balanço Diário</h1>
+        
+        <!-- Botões de Troca de Loja -->
+        <div class="flex bg-emerald-700 p-1 rounded-xl mb-2">
+            <button onclick="mudarLoja('paranoa')" id="btn-loja-paranoa" class="flex-1 py-2.5 rounded-lg text-base font-bold bg-white text-emerald-800 shadow transition-all">
+                📍 Paranoá
+            </button>
+            <button onclick="mudarLoja('itapoa')" id="btn-loja-itapoa" class="flex-1 py-2.5 rounded-lg text-base font-bold text-emerald-100 transition-all">
+                📍 Itapoã
+            </button>
+        </div>
+
+        <p id="header-subtitle" class="text-emerald-100 text-center text-sm font-medium">Lista de Compras (Ceasa/Frutas)</p>
+    </header>
+
+    <!-- Área Principal Conteúdo -->
+    <main class="flex-1 overflow-y-auto p-4 pb-24" id="main-content">
+        
+        <!-- ABA 1: LISTA DE COMPRAS -->
+        <div id="tab-lista" class="tab-content active">
+            <div class="bg-white p-4 rounded-xl shadow-sm mb-6 border border-gray-100">
+                <label for="novoItem" class="block text-gray-700 font-semibold mb-2 text-base" id="label-adicionar-compras">
+                    Adicionar Produto - Paranoá
+                </label>
+                <div class="relative">
+                    <div class="flex gap-2">
+                        <input type="text" id="novoItem" placeholder="Pesquise ou digite..." 
+                               class="flex-1 bg-gray-100 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block p-3"
+                               oninput="filtrarSugestoes()"
+                               onkeypress="handleEnterCompras(event)"
+                               autocomplete="off">
+                        <button onclick="adicionarItemCompra()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg px-5 flex items-center justify-center transition-colors shadow-md">
+                            <i data-lucide="plus" class="w-7 h-7"></i>
+                        </button>
+                    </div>
+                    <div id="sugestoes-container" class="absolute z-20 w-full bg-white border border-gray-200 rounded-lg shadow-2xl mt-1 hidden max-h-64 overflow-y-auto divide-y divide-gray-100">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-end mb-4 px-2">
+                <h2 class="text-lg font-bold text-gray-800">Itens Comprados</h2>
+                <div class="text-sm font-semibold text-emerald-600 bg-emerald-100 px-3 py-1 rounded-full" id="contador-compras">0 itens</div>
+            </div>
+
+            <div id="lista-compras" class="space-y-4"></div>
+            
+            <div id="empty-compras" class="text-center text-gray-500 mt-10 hidden">
+                <i data-lucide="shopping-basket" class="w-16 h-16 mx-auto mb-3 text-gray-300"></i>
+                <p class="text-base">Nenhum produto listado.<br>Adicione acima.</p>
+            </div>
+        </div>
+
+        <!-- ABA 2: DESPESAS EXTRAS -->
+        <div id="tab-despesas" class="tab-content">
+            <div class="bg-white p-4 rounded-xl shadow-sm mb-6 border border-gray-100">
+                <label class="block text-gray-700 font-semibold mb-2 text-base" id="label-adicionar-despesas">
+                    Adicionar Despesa - Paranoá
+                </label>
+                
+                <!-- Chips de Sugestão Rápida -->
+                <div class="flex gap-2 overflow-x-auto no-scrollbar mb-4 pb-1">
+                    <button onclick="preencherDespesa('Disel')" class="whitespace-nowrap px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-emerald-100 hover:text-emerald-700 active:scale-95 transition-all">⛽ Disel</button>
+                    <button onclick="preencherDespesa('Almoço')" class="whitespace-nowrap px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-emerald-100 hover:text-emerald-700 active:scale-95 transition-all">🍽️ Almoço</button>
+                    <button onclick="preencherDespesa('Passagem')" class="whitespace-nowrap px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-emerald-100 hover:text-emerald-700 active:scale-95 transition-all">🚌 Passagem</button>
+                    <button onclick="preencherDespesa('Vale')" class="whitespace-nowrap px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-emerald-100 hover:text-emerald-700 active:scale-95 transition-all">💸 Vale</button>
+                    <button onclick="preencherDespesa('L.A.')" class="whitespace-nowrap px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-emerald-100 hover:text-emerald-700 active:scale-95 transition-all">🏢 L.A.</button>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <input type="text" id="novaDespesaDesc" placeholder="Descrição (ex: Almoço da equipe)" 
+                           class="w-full bg-gray-100 border border-gray-300 text-gray-900 text-base rounded-lg p-3">
+                    <div class="flex gap-2">
+                        <div class="relative flex-1">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <span class="text-gray-500 font-bold">R$</span>
+                            </div>
+                            <input type="number" step="0.01" inputmode="decimal" id="novaDespesaValor" placeholder="0,00" 
+                                   onkeypress="handleEnterDespesas(event)"
+                                   class="w-full bg-gray-100 border border-gray-300 text-gray-900 text-lg font-bold rounded-lg p-3 pl-10">
+                        </div>
+                        <button onclick="adicionarDespesa()" class="bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg px-5 flex items-center justify-center transition-colors shadow-md">
+                            <i data-lucide="plus" class="w-7 h-7"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-end mb-4 px-2">
+                <h2 class="text-lg font-bold text-gray-800">Lista de Despesas</h2>
+                <div class="text-sm font-semibold text-red-600 bg-red-100 px-3 py-1 rounded-full" id="contador-despesas">0 itens</div>
+            </div>
+
+            <div id="lista-despesas-container" class="space-y-3"></div>
+            
+            <div id="empty-despesas" class="text-center text-gray-500 mt-10 hidden">
+                <i data-lucide="receipt" class="w-16 h-16 mx-auto mb-3 text-gray-300"></i>
+                <p class="text-base">Nenhuma despesa lançada.<br>Adicione acima.</p>
+            </div>
+        </div>
+
+        <!-- ABA 3: BALANÇO / RESUMO -->
+        <div id="tab-balanco" class="tab-content">
+            
+            <!-- Card Consolidado Ambas as Lojas -->
+            <div class="bg-gray-800 text-white p-5 rounded-2xl shadow-lg mb-6 border border-gray-700">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-sm text-gray-300 font-bold uppercase tracking-wider">Total Geral (Ambas Lojas)</h2>
+                    <i data-lucide="building-2" class="w-5 h-5 text-gray-400"></i>
+                </div>
+                <div class="text-3xl font-bold tracking-tight text-emerald-400" id="resumo-total-redes">R$ 0,00</div>
+            </div>
+
+            <div class="border-t-2 border-dashed border-gray-200 mb-6 mx-2"></div>
+
+            <!-- Card Loja Atual -->
+            <h3 class="text-lg font-bold text-gray-800 mb-3 px-2">Balanço <span id="resumo-nome-loja" class="text-emerald-600">Paranoá</span></h3>
+            
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-emerald-100 flex flex-col justify-center">
+                    <span class="text-xs font-bold text-gray-500 uppercase">Total Compras</span>
+                    <span class="text-lg font-bold text-emerald-600" id="resumo-subtotal-compras">R$ 0,00</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-red-100 flex flex-col justify-center">
+                    <span class="text-xs font-bold text-gray-500 uppercase">Total Despesas</span>
+                    <span class="text-lg font-bold text-red-500" id="resumo-subtotal-despesas">R$ 0,00</span>
+                </div>
+            </div>
+
+            <div class="bg-emerald-600 text-white p-5 rounded-xl shadow-md mb-6 flex justify-between items-center">
+                <span class="text-lg font-medium text-emerald-100">Custo Total da Loja</span>
+                <span class="text-2xl font-bold" id="resumo-total-loja">R$ 0,00</span>
+            </div>
+
+            <button onclick="compartilharWhatsApp()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl shadow-md flex items-center justify-center gap-2 active:scale-95 transition-transform text-lg mb-6">
+                <i data-lucide="message-circle" class="w-6 h-6"></i>
+                Enviar Balanço p/ WhatsApp
+            </button>
+
+            <button onclick="confirmarLimparLista()" class="w-full bg-white text-red-500 font-bold py-3.5 rounded-xl border border-red-200 flex items-center justify-center gap-2 active:bg-red-50 transition-colors text-base shadow-sm">
+                <i data-lucide="trash-2" class="w-5 h-5"></i>
+                Zerar Dados Desta Loja
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Navegação Inferior -->
+    <nav class="bg-white border-t border-gray-200 fixed bottom-0 w-full max-w-md pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20">
+        <ul class="flex justify-around items-center h-20">
+            <li class="flex-1">
+                <button onclick="mudarAba('lista')" id="btn-tab-lista" class="w-full h-full flex flex-col items-center justify-center text-emerald-600 transition-colors">
+                    <i data-lucide="shopping-cart" class="w-6 h-6 mb-1"></i>
+                    <span class="text-xs font-bold">Compras</span>
+                </button>
+            </li>
+            <li class="flex-1 border-l border-gray-100">
+                <button onclick="mudarAba('despesas')" id="btn-tab-despesas" class="w-full h-full flex flex-col items-center justify-center text-gray-400 transition-colors">
+                    <i data-lucide="wallet" class="w-6 h-6 mb-1"></i>
+                    <span class="text-xs font-bold">Despesas</span>
+                </button>
+            </li>
+            <li class="flex-1 border-l border-gray-100">
+                <button onclick="mudarAba('balanco')" id="btn-tab-balanco" class="w-full h-full flex flex-col items-center justify-center text-gray-400 transition-colors">
+                    <i data-lucide="bar-chart-2" class="w-6 h-6 mb-1"></i>
+                    <span class="text-xs font-bold">Balanço</span>
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Toast -->
+    <div id="toast">Mensagem do sistema</div>
+
+    <!-- Modal Limpar -->
+    <div id="modal-limpar" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform transition-all">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2 text-center">Zerar Balanço?</h3>
+            <p class="text-gray-600 text-sm mb-6 text-center" id="texto-modal-limpar">Isso apagará as compras e despesas do Paranoá. Deseja continuar?</p>
+            <div class="flex gap-3">
+                <button onclick="fecharModalLimpar()" class="flex-1 py-3 bg-gray-100 text-gray-800 rounded-xl font-bold text-base active:bg-gray-200">Cancelar</button>
+                <button onclick="limparListaToda()" class="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold text-base active:bg-red-700 shadow-md">Sim, Apagar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        lucide.createIcons();
+
+        // --- ESTADO DA APLICAÇÃO ---
+        let lojaAtual = 'paranoa';
+        const nomesLojas = { paranoa: 'Sacolão F.V. Paranoá', itapoa: 'Sacolão F.V. Itapoã' };
+        const nomesCurtos = { paranoa: 'Paranoá', itapoa: 'Itapoã' };
+
+        // Nova estrutura de dados comportando compras e despesas
+        let dadosDefault = {
+            paranoa: { compras: [], despesas: [] },
+            itapoa: { compras: [], despesas: [] }
+        };
+
+        // Lógica de migração (se usuário tinha a versão anterior do app)
+        let dadosLojas = JSON.parse(localStorage.getItem('sfv_dados_lojas_v2'));
+        if (!dadosLojas) {
+            let oldData = JSON.parse(localStorage.getItem('sfv_dados_lojas'));
+            if (oldData && Array.isArray(oldData.paranoa)) {
+                // Migra do formato antigo array para o novo formato objeto
+                dadosLojas = {
+                    paranoa: { compras: oldData.paranoa, despesas: [] },
+                    itapoa: { compras: oldData.itapoa, despesas: [] }
+                };
+            } else {
+                dadosLojas = dadosDefault;
+            }
+            salvarDados();
+        }
+
+        const produtosCatalogo = [
+            "Abacate", "Abacaxi", "Abóbora", "Abobrinha", "Acelga", "Acerola", "Agrião", "Alface", "Alho", "Ameixa", 
+            "Banana", "Batata Doce", "Batata Inglesa", "Berinjela", "Beterraba", "Brócolis", 
+            "Caju", "Caqui", "Cebola", "Cebolinha", "Cenoura", "Chuchu", "Coentro", "Couve", 
+            "Goiaba", "Hortelã", "Inhame", "Jiló", "Kiwi", "Laranja", "Limão", 
+            "Maçã", "Mamão", "Mandioca", "Manga", "Maracujá", "Melancia", "Melão", "Morango", 
+            "Pepino", "Pera", "Pimentão", "Quiabo", "Repolho", "Rúcula", "Salsa", "Tangerina", "Tomate", "Uva", "Vagem"
+        ].sort((a, b) => a.localeCompare(b)); 
+
+        const formatarDinheiro = (valor) => {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+        };
+
+        function mostrarToast(mensagem) {
+            const toast = document.getElementById("toast");
+            toast.textContent = mensagem;
+            toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        // --- NAVEGAÇÃO ---
+        function mudarLoja(novaLoja) {
+            lojaAtual = novaLoja;
+            
+            const btnParanoa = document.getElementById('btn-loja-paranoa');
+            const btnItapoa = document.getElementById('btn-loja-itapoa');
+
+            if(lojaAtual === 'paranoa') {
+                btnParanoa.className = "flex-1 py-2.5 rounded-lg text-base font-bold bg-white text-emerald-800 shadow transition-all";
+                btnItapoa.className = "flex-1 py-2.5 rounded-lg text-base font-bold text-emerald-100 transition-all";
+            } else {
+                btnItapoa.className = "flex-1 py-2.5 rounded-lg text-base font-bold bg-white text-emerald-800 shadow transition-all";
+                btnParanoa.className = "flex-1 py-2.5 rounded-lg text-base font-bold text-emerald-100 transition-all";
+            }
+
+            document.getElementById('label-adicionar-compras').textContent = `Adicionar Produto - ${nomesCurtos[lojaAtual]}`;
+            document.getElementById('label-adicionar-despesas').textContent = `Adicionar Despesa - ${nomesCurtos[lojaAtual]}`;
+            document.getElementById('resumo-nome-loja').textContent = nomesCurtos[lojaAtual];
+            
+            document.getElementById('novoItem').value = ''; 
+            document.getElementById('novaDespesaDesc').value = '';
+            document.getElementById('novaDespesaValor').value = '';
+
+            renderizar();
+            mostrarToast(`Loja ativa: ${nomesCurtos[lojaAtual]}`);
+        }
+
+        function mudarAba(abaDestino) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(el => {
+                el.classList.remove('text-emerald-600');
+                el.classList.add('text-gray-400');
+            });
+
+            document.getElementById(`tab-${abaDestino}`).classList.add('active');
+            document.getElementById(`btn-tab-${abaDestino}`).classList.remove('text-gray-400');
+            document.getElementById(`btn-tab-${abaDestino}`).classList.add('text-emerald-600');
+
+            const subtitulo = document.getElementById('header-subtitle');
+            if(abaDestino === 'lista') subtitulo.textContent = "Lista de Compras (Ceasa/Frutas)";
+            if(abaDestino === 'despesas') subtitulo.textContent = "Despesas Extras e Pagamentos";
+            if(abaDestino === 'balanco') subtitulo.textContent = "Balanço Geral do Dia";
+
+            renderizar();
+            document.getElementById('main-content').scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        // --- ABA 1: COMPRAS ---
+        function filtrarSugestoes() {
+            const input = document.getElementById('novoItem');
+            const query = input.value.trim().toLowerCase();
+            const container = document.getElementById('sugestoes-container');
+
+            if (query.length < 1) { container.classList.add('hidden'); return; }
+
+            const termoLimpo = query.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            const filtrados = produtosCatalogo.filter(p => p.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(termoLimpo));
+
+            if (filtrados.length === 0) { container.classList.add('hidden'); return; }
+
+            container.innerHTML = filtrados.map(p => `
+                <div onclick="adicionarItemSugerido('${p}')" class="p-4 text-base font-medium text-gray-800 hover:bg-emerald-50 cursor-pointer flex items-center gap-3">
+                    <i data-lucide="search" class="w-4 h-4 text-gray-400"></i> ${p}
+                </div>
+            `).join('');
+            lucide.createIcons();
+            container.classList.remove('hidden');
+        }
+
+        function adicionarItemSugerido(nome) {
+            document.getElementById('novoItem').value = nome;
+            document.getElementById('sugestoes-container').classList.add('hidden');
+            adicionarItemCompra();
+        }
+
+        function handleEnterCompras(e) { if (e.key === 'Enter') adicionarItemCompra(); }
+
+        function adicionarItemCompra() {
+            const input = document.getElementById('novoItem');
+            const nome = input.value.trim();
+            if (!nome) { mostrarToast('Digite o produto!'); return; }
+
+            dadosLojas[lojaAtual].compras.push({ id: Date.now().toString(), nome: nome, quantidade: '', preco: '' });
+            input.value = ''; input.focus();
+            document.getElementById('sugestoes-container').classList.add('hidden');
+            salvarDados(); renderizar();
+        }
+
+        function removerCompra(id) {
+            dadosLojas[lojaAtual].compras = dadosLojas[lojaAtual].compras.filter(i => i.id !== id);
+            salvarDados(); renderizar();
+        }
+
+        function atualizarQtd(id, val) {
+            const index = dadosLojas[lojaAtual].compras.findIndex(i => i.id === id);
+            if (index !== -1) { dadosLojas[lojaAtual].compras[index].quantidade = val.replace(',', '.'); salvarDados(); atualizarTotaisUI(); }
+        }
+
+        function atualizarPreco(id, val) {
+            const index = dadosLojas[lojaAtual].compras.findIndex(i => i.id === id);
+            if (index !== -1) { dadosLojas[lojaAtual].compras[index].preco = val.replace(',', '.'); salvarDados(); atualizarTotaisUI(); }
+        }
+
+        // --- ABA 2: DESPESAS ---
+        function preencherDespesa(texto) {
+            document.getElementById('novaDespesaDesc').value = texto;
+            document.getElementById('novaDespesaValor').focus();
+        }
+
+        function handleEnterDespesas(e) { if (e.key === 'Enter') adicionarDespesa(); }
+
+        function adicionarDespesa() {
+            const inputDesc = document.getElementById('novaDespesaDesc');
+            const inputValor = document.getElementById('novaDespesaValor');
+            const desc = inputDesc.value.trim();
+            const valor = parseFloat(inputValor.value.trim().replace(',', '.'));
+
+            if (!desc) { mostrarToast('Descreva a despesa!'); return; }
+            if (isNaN(valor) || valor <= 0) { mostrarToast('Insira um valor válido!'); return; }
+
+            dadosLojas[lojaAtual].despesas.push({ id: 'd_'+Date.now().toString(), nome: desc, valor: valor });
+            
+            inputDesc.value = ''; inputValor.value = ''; inputDesc.focus();
+            salvarDados(); renderizar(); mostrarToast('Despesa adicionada!');
+        }
+
+        function removerDespesa(id) {
+            dadosLojas[lojaAtual].despesas = dadosLojas[lojaAtual].despesas.filter(i => i.id !== id);
+            salvarDados(); renderizar();
+        }
+
+        function atualizarValorDespesaListada(id, val) {
+             const index = dadosLojas[lojaAtual].despesas.findIndex(i => i.id === id);
+             let numero = parseFloat(val.replace(',', '.'));
+             if (index !== -1 && !isNaN(numero)) { 
+                 dadosLojas[lojaAtual].despesas[index].valor = numero; 
+                 salvarDados(); atualizarTotaisUI(); 
+             }
+        }
+
+        // --- ATUALIZAÇÃO E RENDERIZAÇÃO ---
+        function salvarDados() {
+            localStorage.setItem('sfv_dados_lojas_v2', JSON.stringify(dadosLojas));
+        }
+
+        function calcularTotaisLoja(lojaId) {
+            let totalCompras = 0;
+            dadosLojas[lojaId].compras.forEach(i => {
+                totalCompras += (parseFloat(i.quantidade) || 0) * (parseFloat(i.preco) || 0);
+            });
+            
+            let totalDespesas = 0;
+            dadosLojas[lojaId].despesas.forEach(i => { totalDespesas += (parseFloat(i.valor) || 0); });
+
+            return { compras: totalCompras, despesas: totalDespesas, total: totalCompras + totalDespesas };
+        }
+
+        function atualizarTotaisUI() {
+            // Totais da Loja Atual
+            let calcAtual = calcularTotaisLoja(lojaAtual);
+            
+            // Atualiza barrinhas das compras
+            dadosLojas[lojaAtual].compras.forEach(item => {
+                let q = parseFloat(item.quantidade) || 0;
+                let p = parseFloat(item.preco) || 0;
+                let elSub = document.getElementById(`total-item-${item.id}`);
+                if(elSub) elSub.textContent = formatarDinheiro(q * p);
+            });
+
+            // Atualiza cards no balanço
+            document.getElementById('resumo-subtotal-compras').textContent = formatarDinheiro(calcAtual.compras);
+            document.getElementById('resumo-subtotal-despesas').textContent = formatarDinheiro(calcAtual.despesas);
+            document.getElementById('resumo-total-loja').textContent = formatarDinheiro(calcAtual.total);
+
+            // Totais Rede (Soma de Todas as Lojas)
+            let totalRede = 0;
+            Object.keys(dadosLojas).forEach(key => { totalRede += calcularTotaisLoja(key).total; });
+            document.getElementById('resumo-total-redes').textContent = formatarDinheiro(totalRede);
+        }
+
+        function renderizar() {
+            const listaComprasEl = document.getElementById('lista-compras');
+            const listaDespesasEl = document.getElementById('lista-despesas-container');
+            
+            listaComprasEl.innerHTML = '';
+            listaDespesasEl.innerHTML = '';
+
+            const compras = dadosLojas[lojaAtual].compras;
+            const despesas = dadosLojas[lojaAtual].despesas;
+
+            document.getElementById('contador-compras').textContent = `${compras.length} itens`;
+            document.getElementById('contador-despesas').textContent = `${despesas.length} reg.`;
+
+            // Renderizar Compras
+            compras.forEach(item => {
+                listaComprasEl.innerHTML += `
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col gap-3">
+                        <div class="flex justify-between items-center border-b border-gray-50 pb-2">
+                            <span class="text-lg font-bold text-gray-800">${item.nome}</span>
+                            <button onclick="removerCompra('${item.id}')" class="p-1.5 text-gray-400 hover:text-red-500 rounded-lg">
+                                <i data-lucide="trash-2" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="flex-1">
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1">Qtd</label>
+                                <input type="number" step="0.01" inputmode="decimal" oninput="atualizarQtd('${item.id}', this.value)" value="${item.quantidade}" placeholder="0" 
+                                       class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-base rounded-lg p-2 text-center">
+                            </div>
+                            <div class="flex-[1.5]">
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1">Preço / un</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none"><span class="text-gray-400 font-bold text-sm">R$</span></div>
+                                    <input type="number" step="0.01" inputmode="decimal" oninput="atualizarPreco('${item.id}', this.value)" value="${item.preco}" placeholder="0,00" 
+                                           class="w-full bg-gray-50 border border-gray-200 text-gray-900 text-base font-bold rounded-lg p-2 pl-7 text-right">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-1 flex justify-between items-center bg-gray-50 p-2 rounded border border-gray-100">
+                            <span class="text-xs font-bold text-gray-500">Subtotal</span>
+                            <span class="text-sm font-bold text-emerald-600" id="total-item-${item.id}">R$ 0,00</span>
+                        </div>
+                    </div>`;
+            });
+
+            // Renderizar Despesas
+            despesas.forEach(item => {
+                listaDespesasEl.innerHTML += `
+                    <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center gap-3">
+                        <div class="flex-1">
+                            <span class="text-base font-semibold text-gray-800 block mb-1">${item.nome}</span>
+                        </div>
+                        <div class="relative w-28">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none"><span class="text-gray-400 text-sm">R$</span></div>
+                            <input type="number" step="0.01" inputmode="decimal" oninput="atualizarValorDespesaListada('${item.id}', this.value)" value="${item.valor}" 
+                                   class="w-full bg-gray-50 border border-gray-200 text-red-600 text-sm font-bold rounded-lg p-2 pl-7 text-right">
+                        </div>
+                        <button onclick="removerDespesa('${item.id}')" class="p-2 text-gray-400 hover:text-red-500">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>`;
+            });
+
+            document.getElementById('empty-compras').classList.toggle('hidden', compras.length > 0);
+            document.getElementById('empty-despesas').classList.toggle('hidden', despesas.length > 0);
+            
+            atualizarTotaisUI();
+            lucide.createIcons();
+        }
+
+        // --- AÇÕES FINAIS ---
+        function compartilharWhatsApp() {
+            let calc = calcularTotaisLoja(lojaAtual);
+            if (calc.total === 0) { mostrarToast('Não há valores para enviar!'); return; }
+
+            let texto = `*BALANÇO DIÁRIO*\n🏢 *${nomesLojas[lojaAtual]}*\n📅 ${new Date().toLocaleDateString('pt-BR')}\n\n`;
+            
+            // Seção Compras
+            const itensComprados = dadosLojas[lojaAtual].compras.filter(i => (parseFloat(i.quantidade)||0)>0 && (parseFloat(i.preco)||0)>0);
+            if (itensComprados.length > 0) {
+                texto += `🛒 *COMPRAS (CEASA/FRUTAS)*\n`;
+                itensComprados.forEach(i => {
+                    let q = parseFloat(i.quantidade); let p = parseFloat(i.preco);
+                    texto += `▪️ ${i.nome}: ${formatarDinheiro(q*p)}\n`;
+                });
+                texto += `_Subtotal Compras: ${formatarDinheiro(calc.compras)}_\n\n`;
+            }
+
+            // Seção Despesas
+            const desp = dadosLojas[lojaAtual].despesas;
+            if (desp.length > 0) {
+                texto += `💸 *OUTRAS DESPESAS*\n`;
+                desp.forEach(i => { texto += `▪️ ${i.nome}: ${formatarDinheiro(i.valor)}\n`; });
+                texto += `_Subtotal Despesas: ${formatarDinheiro(calc.despesas)}_\n\n`;
+            }
+
+            texto += `💰 *CUSTO TOTAL DA LOJA: ${formatarDinheiro(calc.total)}*`;
+
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
+            window.open(url, '_blank');
+        }
+
+        function confirmarLimparLista() {
+            document.getElementById('texto-modal-limpar').textContent = `Isso apagará todas as compras e despesas do ${nomesCurtos[lojaAtual]}. Deseja continuar?`;
+            document.getElementById('modal-limpar').classList.remove('hidden');
+        }
+
+        function fecharModalLimpar() { document.getElementById('modal-limpar').classList.add('hidden'); }
+
+        function limparListaToda() {
+            dadosLojas[lojaAtual] = { compras: [], despesas: [] };
+            salvarDados(); fecharModalLimpar(); renderizar();
+            mostrarToast(`Balanço do ${nomesCurtos[lojaAtual]} zerado!`);
+        }
+
+        renderizar();
+
+    </script>
+</body>
+</html>
