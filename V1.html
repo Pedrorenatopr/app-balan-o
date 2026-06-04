@@ -182,95 +182,7 @@
             </div>
         </div>
 
-        <!-- ABA 3: FECHAMENTO DE CAIXA -->
-        <div id="tab-caixa" class="tab-content">
-            <div class="bg-white p-4 rounded-xl shadow-sm mb-6 border border-gray-100">
-                <label class="block text-gray-700 font-semibold mb-4 text-base" id="label-adicionar-caixa">
-                    Fechamento de Caixa - Paranoá
-                </label>
-
-                <!-- Campos de Receitas -->
-                <div class="space-y-4">
-                    <!-- Dinheiro -->
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                            <i data-lucide="banknote" class="w-5 h-5"></i>
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-xs font-bold text-gray-500 uppercase">Dinheiro</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <span class="text-gray-500 font-bold">R$</span>
-                                </div>
-                                <input type="number" step="0.01" inputmode="decimal" id="receita-dinheiro" oninput="atualizarReceita('dinheiro', this.value)" placeholder="0,00" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-lg font-bold rounded-lg p-2 pl-10">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Cartão -->
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                            <i data-lucide="credit-card" class="w-5 h-5"></i>
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-xs font-bold text-gray-500 uppercase">Cartão (Débito)</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <span class="text-gray-500 font-bold">R$</span>
-                                </div>
-                                <input type="number" step="0.01" inputmode="decimal" id="receita-cartao" oninput="atualizarReceita('cartao', this.value)" placeholder="0,00" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-lg font-bold rounded-lg p-2 pl-10">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Crédito -->
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
-                            <i data-lucide="credit-card" class="w-5 h-5"></i>
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-xs font-bold text-gray-500 uppercase">Cartão (Crédito)</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <span class="text-gray-500 font-bold">R$</span>
-                                </div>
-                                <input type="number" step="0.01" inputmode="decimal" id="receita-credito" oninput="atualizarReceita('credito', this.value)" placeholder="0,00" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-lg font-bold rounded-lg p-2 pl-10">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Pix -->
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-600">
-                            <i data-lucide="smartphone" class="w-5 h-5"></i>
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-xs font-bold text-gray-500 uppercase">Pix</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <span class="text-gray-500 font-bold">R$</span>
-                                </div>
-                                <input type="number" step="0.01" inputmode="decimal" id="receita-pix" oninput="atualizarReceita('pix', this.value)" placeholder="0,00" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-lg font-bold rounded-lg p-2 pl-10">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Alimentação -->
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
-                            <i data-lucide="shopping-bag" class="w-5 h-5"></i>
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-xs font-bold text-gray-500 uppercase">Vale Alimentação</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <span class="text-gray-500 font-bold">R$</span>
-                                </div>
-                                <input type="number" step="0.01" inputmode="decimal" id="receita-alimentacao" oninput="atualizarReceita('alimentacao', this.value)" placeholder="0,00" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-lg font-bold rounded-lg p-2 pl-10">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ABA 4: BALANÇO / RESUMO -->
+        <!-- ABA 3: BALANÇO / RESUMO -->
         <div id="tab-balanco" class="tab-content">
             
             <!-- Card Consolidado Ambas as Lojas -->
@@ -279,16 +191,7 @@
                     <h2 class="text-sm text-gray-300 font-bold uppercase tracking-wider">Total Geral (Ambas Lojas)</h2>
                     <i data-lucide="building-2" class="w-5 h-5 text-gray-400"></i>
                 </div>
-                <div class="flex justify-between items-end">
-                    <div>
-                        <div class="text-xs text-gray-400 mb-1">Custos Totais</div>
-                        <div class="text-xl font-bold tracking-tight text-red-400" id="resumo-total-redes">R$ 0,00</div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-xs text-gray-400 mb-1">Lucro Geral</div>
-                        <div class="text-2xl font-bold tracking-tight text-emerald-400" id="resumo-lucro-redes">R$ 0,00</div>
-                    </div>
-                </div>
+                <div class="text-3xl font-bold tracking-tight text-emerald-400" id="resumo-total-redes">R$ 0,00</div>
             </div>
 
             <div class="border-t-2 border-dashed border-gray-200 mb-6 mx-2"></div>
@@ -296,7 +199,7 @@
             <!-- Card Loja Atual -->
             <h3 class="text-lg font-bold text-gray-800 mb-3 px-2">Balanço <span id="resumo-nome-loja" class="text-emerald-600">Paranoá</span></h3>
             
-            <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="grid grid-cols-2 gap-3 mb-4">
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-emerald-100 flex flex-col justify-center">
                     <span class="text-xs font-bold text-gray-500 uppercase">Total Compras</span>
                     <span class="text-lg font-bold text-emerald-600" id="resumo-subtotal-compras">R$ 0,00</span>
@@ -307,22 +210,9 @@
                 </div>
             </div>
 
-            <!-- Custos -->
-            <div class="bg-red-50 text-red-700 p-4 rounded-xl shadow-sm border border-red-100 mb-3 flex justify-between items-center">
-                <span class="text-base font-bold">Custo Total da Loja</span>
-                <span class="text-xl font-bold" id="resumo-total-loja">R$ 0,00</span>
-            </div>
-
-            <!-- Entradas -->
-            <div class="bg-blue-50 text-blue-700 p-4 rounded-xl shadow-sm border border-blue-100 mb-3 flex justify-between items-center">
-                <span class="text-base font-bold">Entradas (Caixa)</span>
-                <span class="text-xl font-bold" id="resumo-total-receitas">R$ 0,00</span>
-            </div>
-
-            <!-- Lucro Líquido -->
             <div class="bg-emerald-600 text-white p-5 rounded-xl shadow-md mb-6 flex justify-between items-center">
-                <span class="text-lg font-medium text-emerald-100">Lucro Líquido</span>
-                <span class="text-2xl font-bold" id="resumo-lucro-loja">R$ 0,00</span>
+                <span class="text-lg font-medium text-emerald-100">Custo Total da Loja</span>
+                <span class="text-2xl font-bold" id="resumo-total-loja">R$ 0,00</span>
             </div>
 
             <button onclick="compartilharWhatsApp()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl shadow-md flex items-center justify-center gap-2 active:scale-95 transition-transform text-lg mb-6">
@@ -351,12 +241,6 @@
                 <button onclick="mudarAba('despesas')" id="btn-tab-despesas" class="w-full h-full flex flex-col items-center justify-center text-gray-400 transition-colors">
                     <i data-lucide="wallet" class="w-6 h-6 mb-1"></i>
                     <span class="text-xs font-bold">Despesas</span>
-                </button>
-            </li>
-            <li class="flex-1 border-l border-gray-100">
-                <button onclick="mudarAba('caixa')" id="btn-tab-caixa" class="w-full h-full flex flex-col items-center justify-center text-gray-400 transition-colors">
-                    <i data-lucide="piggy-bank" class="w-6 h-6 mb-1"></i>
-                    <span class="text-xs font-bold">Caixa</span>
                 </button>
             </li>
             <li class="flex-1 border-l border-gray-100">
@@ -395,10 +279,10 @@
         const nomesLojas = { paranoa: 'Sacolão F.V. Paranoá', itapoa: 'Sacolão F.V. Itapoã' };
         const nomesCurtos = { paranoa: 'Paranoá', itapoa: 'Itapoã' };
 
-        // Estrutura de dados com a nova área de receitas (caixa)
+        // Nova estrutura de dados comportando compras e despesas
         let dadosDefault = {
-            paranoa: { compras: [], despesas: [], receitas: { dinheiro: '', cartao: '', credito: '', pix: '', alimentacao: '' } },
-            itapoa: { compras: [], despesas: [], receitas: { dinheiro: '', cartao: '', credito: '', pix: '', alimentacao: '' } }
+            paranoa: { compras: [], despesas: [] },
+            itapoa: { compras: [], despesas: [] }
         };
 
         // Lógica de migração (se usuário tinha a versão anterior do app)
@@ -408,20 +292,13 @@
             if (oldData && Array.isArray(oldData.paranoa)) {
                 // Migra do formato antigo array para o novo formato objeto
                 dadosLojas = {
-                    paranoa: { compras: oldData.paranoa, despesas: [], receitas: { dinheiro: '', cartao: '', credito: '', pix: '', alimentacao: '' } },
-                    itapoa: { compras: oldData.itapoa, despesas: [], receitas: { dinheiro: '', cartao: '', credito: '', pix: '', alimentacao: '' } }
+                    paranoa: { compras: oldData.paranoa, despesas: [] },
+                    itapoa: { compras: oldData.itapoa, despesas: [] }
                 };
             } else {
                 dadosLojas = dadosDefault;
             }
             salvarDados();
-        } else {
-            // Garante que versões que já tinham v2 recebam o objeto receitas
-            if(!dadosLojas.paranoa.receitas) {
-                dadosLojas.paranoa.receitas = { dinheiro: '', cartao: '', credito: '', pix: '', alimentacao: '' };
-                dadosLojas.itapoa.receitas = { dinheiro: '', cartao: '', credito: '', pix: '', alimentacao: '' };
-                salvarDados();
-            }
         }
 
         const produtosCatalogo = [
@@ -461,7 +338,6 @@
 
             document.getElementById('label-adicionar-compras').textContent = `Adicionar Produto - ${nomesCurtos[lojaAtual]}`;
             document.getElementById('label-adicionar-despesas').textContent = `Adicionar Despesa - ${nomesCurtos[lojaAtual]}`;
-            document.getElementById('label-adicionar-caixa').textContent = `Fechamento de Caixa - ${nomesCurtos[lojaAtual]}`;
             document.getElementById('resumo-nome-loja').textContent = nomesCurtos[lojaAtual];
             
             document.getElementById('novoItem').value = ''; 
@@ -486,7 +362,6 @@
             const subtitulo = document.getElementById('header-subtitle');
             if(abaDestino === 'lista') subtitulo.textContent = "Lista de Compras (Ceasa/Frutas)";
             if(abaDestino === 'despesas') subtitulo.textContent = "Despesas Extras e Pagamentos";
-            if(abaDestino === 'caixa') subtitulo.textContent = "Fechamento de Caixa do Dia";
             if(abaDestino === 'balanco') subtitulo.textContent = "Balanço Geral do Dia";
 
             renderizar();
@@ -528,6 +403,7 @@
             const nome = input.value.trim();
             if (!nome) { mostrarToast('Digite o produto!'); return; }
 
+            // MODIFICAÇÃO AQUI: Usando unshift() para que o novo item fique em primeiro na lista
             dadosLojas[lojaAtual].compras.unshift({ id: Date.now().toString(), nome: nome, quantidade: '', preco: '' });
             
             input.value = ''; input.focus();
@@ -567,6 +443,7 @@
             if (!desc) { mostrarToast('Descreva a despesa!'); return; }
             if (isNaN(valor) || valor <= 0) { mostrarToast('Insira um valor válido!'); return; }
 
+            // MODIFICAÇÃO AQUI: Usando unshift() para que a nova despesa fique em primeiro na lista
             dadosLojas[lojaAtual].despesas.unshift({ id: 'd_'+Date.now().toString(), nome: desc, valor: valor });
             
             inputDesc.value = ''; inputValor.value = ''; inputDesc.focus();
@@ -587,13 +464,6 @@
              }
         }
 
-        // --- ABA 3: CAIXA (RECEITAS) ---
-        function atualizarReceita(tipo, val) {
-            dadosLojas[lojaAtual].receitas[tipo] = val.replace(',', '.');
-            salvarDados();
-            atualizarTotaisUI();
-        }
-
         // --- ATUALIZAÇÃO E RENDERIZAÇÃO ---
         function salvarDados() {
             localStorage.setItem('sfv_dados_lojas_v2', JSON.stringify(dadosLojas));
@@ -608,18 +478,7 @@
             let totalDespesas = 0;
             dadosLojas[lojaId].despesas.forEach(i => { totalDespesas += (parseFloat(i.valor) || 0); });
 
-            let totalReceitas = 0;
-            const rec = dadosLojas[lojaId].receitas;
-            totalReceitas += parseFloat(rec.dinheiro) || 0;
-            totalReceitas += parseFloat(rec.cartao) || 0;
-            totalReceitas += parseFloat(rec.credito) || 0;
-            totalReceitas += parseFloat(rec.pix) || 0;
-            totalReceitas += parseFloat(rec.alimentacao) || 0;
-
-            let totalCustos = totalCompras + totalDespesas;
-            let lucroLiquido = totalReceitas - totalCustos;
-
-            return { compras: totalCompras, despesas: totalDespesas, totalCustos: totalCustos, receitas: totalReceitas, lucro: lucroLiquido };
+            return { compras: totalCompras, despesas: totalDespesas, total: totalCompras + totalDespesas };
         }
 
         function atualizarTotaisUI() {
@@ -637,34 +496,12 @@
             // Atualiza cards no balanço
             document.getElementById('resumo-subtotal-compras').textContent = formatarDinheiro(calcAtual.compras);
             document.getElementById('resumo-subtotal-despesas').textContent = formatarDinheiro(calcAtual.despesas);
-            document.getElementById('resumo-total-loja').textContent = formatarDinheiro(calcAtual.totalCustos);
-            document.getElementById('resumo-total-receitas').textContent = formatarDinheiro(calcAtual.receitas);
-            document.getElementById('resumo-lucro-loja').textContent = formatarDinheiro(calcAtual.lucro);
-
-            // Muda a cor do lucro dependendo se for positivo ou negativo
-            const elLucroLoja = document.getElementById('resumo-lucro-loja').parentElement;
-            if (calcAtual.lucro < 0) {
-                elLucroLoja.className = "bg-red-600 text-white p-5 rounded-xl shadow-md mb-6 flex justify-between items-center";
-            } else {
-                elLucroLoja.className = "bg-emerald-600 text-white p-5 rounded-xl shadow-md mb-6 flex justify-between items-center";
-            }
+            document.getElementById('resumo-total-loja').textContent = formatarDinheiro(calcAtual.total);
 
             // Totais Rede (Soma de Todas as Lojas)
-            let totalRedeCustos = 0;
-            let totalRedeLucro = 0;
-            Object.keys(dadosLojas).forEach(key => { 
-                let calc = calcularTotaisLoja(key);
-                totalRedeCustos += calc.totalCustos; 
-                totalRedeLucro += calc.lucro;
-            });
-            document.getElementById('resumo-total-redes').textContent = formatarDinheiro(totalRedeCustos);
-            document.getElementById('resumo-lucro-redes').textContent = formatarDinheiro(totalRedeLucro);
-            
-            if (totalRedeLucro < 0) {
-                document.getElementById('resumo-lucro-redes').classList.replace('text-emerald-400', 'text-red-400');
-            } else {
-                document.getElementById('resumo-lucro-redes').classList.replace('text-red-400', 'text-emerald-400');
-            }
+            let totalRede = 0;
+            Object.keys(dadosLojas).forEach(key => { totalRede += calcularTotaisLoja(key).total; });
+            document.getElementById('resumo-total-redes').textContent = formatarDinheiro(totalRede);
         }
 
         function renderizar() {
@@ -676,17 +513,9 @@
 
             const compras = dadosLojas[lojaAtual].compras;
             const despesas = dadosLojas[lojaAtual].despesas;
-            const receitas = dadosLojas[lojaAtual].receitas;
 
             document.getElementById('contador-compras').textContent = `${compras.length} itens`;
             document.getElementById('contador-despesas').textContent = `${despesas.length} reg.`;
-
-            // Preencher campos de Receitas (Caixa)
-            document.getElementById('receita-dinheiro').value = receitas.dinheiro || '';
-            document.getElementById('receita-cartao').value = receitas.cartao || '';
-            document.getElementById('receita-credito').value = receitas.credito || '';
-            document.getElementById('receita-pix').value = receitas.pix || '';
-            document.getElementById('receita-alimentacao').value = receitas.alimentacao || '';
 
             // Renderizar Compras
             compras.forEach(item => {
@@ -748,7 +577,7 @@
         // --- AÇÕES FINAIS ---
         function compartilharWhatsApp() {
             let calc = calcularTotaisLoja(lojaAtual);
-            if (calc.totalCustos === 0 && calc.receitas === 0) { mostrarToast('Não há valores para enviar!'); return; }
+            if (calc.total === 0) { mostrarToast('Não há valores para enviar!'); return; }
 
             let texto = `*BALANÇO DIÁRIO*\n🏢 *${nomesLojas[lojaAtual]}*\n📅 ${new Date().toLocaleDateString('pt-BR')}\n\n`;
             
@@ -771,36 +600,21 @@
                 texto += `_Subtotal Despesas: ${formatarDinheiro(calc.despesas)}_\n\n`;
             }
 
-            // Seção Caixa / Receitas
-            let rec = dadosLojas[lojaAtual].receitas;
-            if (calc.receitas > 0) {
-                texto += `💵 *ENTRADAS (FECHAMENTO DE CAIXA)*\n`;
-                if(parseFloat(rec.dinheiro)>0) texto += `▪️ Dinheiro: ${formatarDinheiro(parseFloat(rec.dinheiro))}\n`;
-                if(parseFloat(rec.cartao)>0) texto += `▪️ Cartão Débito: ${formatarDinheiro(parseFloat(rec.cartao))}\n`;
-                if(parseFloat(rec.credito)>0) texto += `▪️ Cartão Crédito: ${formatarDinheiro(parseFloat(rec.credito))}\n`;
-                if(parseFloat(rec.pix)>0) texto += `▪️ Pix: ${formatarDinheiro(parseFloat(rec.pix))}\n`;
-                if(parseFloat(rec.alimentacao)>0) texto += `▪️ Alimentação: ${formatarDinheiro(parseFloat(rec.alimentacao))}\n`;
-                texto += `_Subtotal Entradas: ${formatarDinheiro(calc.receitas)}_\n\n`;
-            }
-
-            texto += `*--------------- RESUMO ---------------*\n`;
-            texto += `🔴 *CUSTOS TOTAIS:* ${formatarDinheiro(calc.totalCustos)}\n`;
-            texto += `🔵 *ENTRADAS CAIXA:* ${formatarDinheiro(calc.receitas)}\n`;
-            texto += `${calc.lucro >= 0 ? '🟢 *LUCRO LÍQUIDO:*' : '🔴 *PREJUÍZO:*'} ${formatarDinheiro(calc.lucro)}`;
+            texto += `💰 *CUSTO TOTAL DA LOJA: ${formatarDinheiro(calc.total)}*`;
 
             const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
             window.open(url, '_blank');
         }
 
         function confirmarLimparLista() {
-            document.getElementById('texto-modal-limpar').textContent = `Isso apagará o fechamento de caixa, compras e despesas do ${nomesCurtos[lojaAtual]}. Deseja continuar?`;
+            document.getElementById('texto-modal-limpar').textContent = `Isso apagará todas as compras e despesas do ${nomesCurtos[lojaAtual]}. Deseja continuar?`;
             document.getElementById('modal-limpar').classList.remove('hidden');
         }
 
         function fecharModalLimpar() { document.getElementById('modal-limpar').classList.add('hidden'); }
 
         function limparListaToda() {
-            dadosLojas[lojaAtual] = { compras: [], despesas: [], receitas: { dinheiro: '', cartao: '', credito: '', pix: '', alimentacao: '' } };
+            dadosLojas[lojaAtual] = { compras: [], despesas: [] };
             salvarDados(); fecharModalLimpar(); renderizar();
             mostrarToast(`Balanço do ${nomesCurtos[lojaAtual]} zerado!`);
         }
